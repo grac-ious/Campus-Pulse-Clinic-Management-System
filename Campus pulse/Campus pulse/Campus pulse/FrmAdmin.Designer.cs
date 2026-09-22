@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dgvAppointments = new System.Windows.Forms.DataGridView();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
@@ -41,20 +40,8 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvAppointments)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // dgvAppointments
-            // 
-            this.dgvAppointments.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvAppointments.Location = new System.Drawing.Point(13, 103);
-            this.dgvAppointments.Margin = new System.Windows.Forms.Padding(4);
-            this.dgvAppointments.Name = "dgvAppointments";
-            this.dgvAppointments.RowHeadersWidth = 51;
-            this.dgvAppointments.Size = new System.Drawing.Size(1135, 441);
-            this.dgvAppointments.TabIndex = 0;
-            this.dgvAppointments.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvAppointments_CellContentClick);
             // 
             // btnRefresh
             // 
@@ -101,9 +88,9 @@
             this.btnUpdate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnUpdate.Location = new System.Drawing.Point(1165, 132);
             this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(100, 28);
+            this.btnUpdate.Size = new System.Drawing.Size(130, 28);
             this.btnUpdate.TabIndex = 4;
-            this.btnUpdate.Text = "Update";
+            this.btnUpdate.Text = "Dashboard";
             this.btnUpdate.UseVisualStyleBackColor = false;
             this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
@@ -121,9 +108,9 @@
             this.btnShowPatients.Name = "btnShowPatients";
             this.btnShowPatients.Size = new System.Drawing.Size(174, 62);
             this.btnShowPatients.TabIndex = 5;
-            this.btnShowPatients.Text = "Student Record";
+            this.btnShowPatients.Text = "Manage System Users";
             this.btnShowPatients.UseVisualStyleBackColor = false;
-            this.btnShowPatients.Click += new System.EventHandler(this.btnShowPatients_Click);
+            this.btnShowPatients.Click += new System.EventHandler(this.ManageSystemUsers_Click);
             // 
             // btnBookingRecords
             // 
@@ -134,7 +121,7 @@
             this.btnBookingRecords.Name = "btnBookingRecords";
             this.btnBookingRecords.Size = new System.Drawing.Size(174, 62);
             this.btnBookingRecords.TabIndex = 6;
-            this.btnBookingRecords.Text = "Booking Appointment";
+            this.btnBookingRecords.Text = "Manage User Access";
             this.btnBookingRecords.UseVisualStyleBackColor = false;
             this.btnBookingRecords.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -147,7 +134,7 @@
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(174, 62);
             this.button4.TabIndex = 7;
-            this.button4.Text = "Staff Record";
+            this.button4.Text = "Generate Reports";
             this.button4.UseVisualStyleBackColor = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
@@ -173,7 +160,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(174, 53);
             this.button1.TabIndex = 9;
-            this.button1.Text = "Staff Registration";
+            this.button1.Text = "Logout";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -205,9 +192,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = global::Campus_pulse.Properties.Resources.WhatsApp_Image_2026_06_07_at_13_131;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(1527, 650);
+            this.ClientSize = new System.Drawing.Size(1082, 603);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button1);
@@ -219,20 +205,17 @@
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.btnRefresh);
-            this.Controls.Add(this.dgvAppointments);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FrmAdmin";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FrmAdmin";
             this.Load += new System.EventHandler(this.FrmAdmin_Load_1);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvAppointments)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.DataGridView dgvAppointments;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button btnDelete;

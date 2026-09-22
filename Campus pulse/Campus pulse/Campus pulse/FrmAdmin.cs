@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data;
+using System.Drawing;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 
@@ -7,660 +7,489 @@ namespace Campus_pulse
 {
     public partial class FrmAdmin : Form
     {
+        // Main layout
+        private Panel pnlNavigation;
+        private Panel pnlContent;
+
+        // Navigation buttons
+        private Button btnDashboard;
+        private Button btnManageUsers;
+        private Button btnManageAccess;
+        private Button btnReports;
+        private Button btnLogout;
+
+        // Content controls
+        private Label lblContentTitle;
+        private Label lblContentDescription;
+
         public FrmAdmin()
         {
             InitializeComponent();
 
             this.StartPosition = FormStartPosition.CenterScreen;
-
-          
         }
 
-        private void LoadAppointments()
+        // =========================================================
+        // BUILD MAIN DASHBOARD
+        // =========================================================
+        private void BuildAdministratorDashboard()
         {
-            string query = @"
-        SELECT
-            AppointmentID,
-            StudentNumber,
-            Initials,
-            AppointmentDate,
-            AppointmentTime,
-            Reason,
-            Email
-        FROM Appointments
-        ORDER BY AppointmentDate DESC";
+            // Hide the old Designer controls.
+            HideOldDesignerControls();
 
-            using (MySqlConnection conn =
-                new MySqlConnection(Database.ConnectionString))
+            this.Text = "Campus Pulse - System Administrator";
+            this.Width = 1100;
+            this.Height = 650;
+            this.MinimumSize = new Size(900, 550);
+            this.BackColor = Color.White;
+
+            // =====================================================
+            // LEFT NAVIGATION PANEL
+            // =====================================================
+
+            pnlNavigation = new Panel();
+            pnlNavigation.Dock = DockStyle.Left;
+            pnlNavigation.Width = 250;
+            pnlNavigation.BackColor = Color.FromArgb(35, 61, 105);
+
+            this.Controls.Add(pnlNavigation);
+
+            // Clinic Management title
+            Label lblSystemTitle = new Label();
+            lblSystemTitle.Text = "CLINIC MANAGEMENT SYSTEM";
+            lblSystemTitle.ForeColor = Color.White;
+            lblSystemTitle.Font = new Font(
+                "Arial",
+                12,
+                FontStyle.Bold);
+            lblSystemTitle.SetBounds(20, 20, 210, 30);
+
+            pnlNavigation.Controls.Add(lblSystemTitle);
+
+            // Role heading
+            Label lblRole = new Label();
+            lblRole.Text = "SYSTEM\r\nADMINISTRATOR";
+            lblRole.ForeColor = Color.White;
+            lblRole.Font = new Font(
+                "Arial",
+                13,
+                FontStyle.Bold);
+            lblRole.SetBounds(20, 70, 210, 55);
+
+            pnlNavigation.Controls.Add(lblRole);
+
+            // =====================================================
+            // NAVIGATION BUTTONS
+            // =====================================================
+
+            btnDashboard = CreateNavigationButton("Dashboard");
+            btnDashboard.SetBounds(20, 150, 210, 45);
+            btnDashboard.Click += btnDashboard_Click;
+
+            btnManageUsers = CreateNavigationButton(
+                "Manage System Users");
+            btnManageUsers.SetBounds(20, 200, 210, 45);
+            btnManageUsers.Click += ManageSystemUsers_Click;
+
+            btnManageAccess = CreateNavigationButton(
+                "Manage User Access");
+            btnManageAccess.SetBounds(20, 250, 210, 45);
+            btnManageAccess.Click += button1_Click;
+
+            btnReports = CreateNavigationButton(
+                "Generate Reports");
+            btnReports.SetBounds(20, 300, 210, 45);
+            btnReports.Click += button3_Click;
+
+            pnlNavigation.Controls.Add(btnDashboard);
+            pnlNavigation.Controls.Add(btnManageUsers);
+            pnlNavigation.Controls.Add(btnManageAccess);
+            pnlNavigation.Controls.Add(btnReports);
+
+            // =====================================================
+            // LOGOUT BUTTON
+            // =====================================================
+
+            btnLogout = CreateNavigationButton("Logout");
+            btnLogout.SetBounds(20, 520, 210, 45);
+            btnLogout.Click += button2_Click;
+
+            pnlNavigation.Controls.Add(btnLogout);
+
+            // =====================================================
+            // RIGHT CONTENT PANEL
+            // =====================================================
+
+            pnlContent = new Panel();
+            pnlContent.Dock = DockStyle.Fill;
+            pnlContent.BackColor = Color.White;
+            pnlContent.Padding = new Padding(35);
+
+            this.Controls.Add(pnlContent);
+
+            // Put navigation in front
+            pnlNavigation.BringToFront();
+
+            // Display dashboard when form opens
+            ShowDashboard();
+        }
+
+        // =========================================================
+        // CREATE NAVIGATION BUTTON
+        // =========================================================
+        private Button CreateNavigationButton(string text)
+        {
+            Button button = new Button();
+
+            button.Text = text;
+            button.FlatStyle = FlatStyle.Flat;
+            button.FlatAppearance.BorderSize = 0;
+            button.BackColor = Color.FromArgb(35, 61, 105);
+            button.ForeColor = Color.White;
+            button.Font = new Font(
+                "Arial",
+                10,
+                FontStyle.Regular);
+
+            button.TextAlign = ContentAlignment.MiddleLeft;
+            button.Padding = new Padding(10, 0, 0, 0);
+            button.Cursor = Cursors.Hand;
+
+            return button;
+        }
+
+        // =========================================================
+        // HIDE OLD DESIGNER CONTROLS
+        // =========================================================
+        private void HideOldDesignerControls()
+        {
+            foreach (Control control in this.Controls)
             {
-                MySqlDataAdapter adapter =
-                    new MySqlDataAdapter(query, conn);
-
-                DataTable table = new DataTable();
-                adapter.Fill(table);
-
-                dgvAppointments.DataSource = table;
+                control.Visible = false;
             }
         }
-        private void LoadStudentRecords()
+
+        // =========================================================
+        // DASHBOARD
+        // =========================================================
+        private void btnDashboard_Click(object sender, EventArgs e)
         {
-            string query = @"
-        SELECT
-            PatientID,
-            StudentNumber,
-            FullName,
-            Email,
-            Sex,
-            ResidentialAddress
-        FROM Users
-        ORDER BY PatientID DESC";
-
-            using (MySqlConnection conn =
-                new MySqlConnection(Database.ConnectionString))
-            {
-                MySqlDataAdapter adapter =
-                    new MySqlDataAdapter(query, conn);
-
-                DataTable table = new DataTable();
-                adapter.Fill(table);
-
-                dgvAppointments.DataSource = table;
-            }
+            ShowDashboard();
         }
 
-        private void FrmAdmin_Load_1(object sender, EventArgs e)
+        private void ShowDashboard()
         {
-            // You can leave this empty or remove it
+            pnlContent.Controls.Clear();
+
+            Label title = CreateContentTitle(
+                "System Administrator Dashboard");
+
+            pnlContent.Controls.Add(title);
+
+            Label welcome = new Label();
+            welcome.Text =
+                "Welcome, " +
+                Session.FullName +
+                "\r\n\r\n" +
+                "Use the navigation menu on the left to manage " +
+                "system users, user access and management reports.";
+
+            welcome.Font = new Font(
+                "Arial",
+                11,
+                FontStyle.Regular);
+
+            welcome.ForeColor = Color.FromArgb(60, 60, 60);
+            welcome.SetBounds(40, 90, 650, 100);
+
+            pnlContent.Controls.Add(welcome);
         }
 
+        // =========================================================
+        // MANAGE SYSTEM USERS
+        // =========================================================
+        private void ManageSystemUsers_Click(
+            object sender,
+            EventArgs e)
+        {
+            ShowManageSystemUsers();
+        }
+
+        private void ShowManageSystemUsers()
+        {
+            pnlContent.Controls.Clear();
+
+            Label title = CreateContentTitle(
+                "Manage System Users");
+
+            pnlContent.Controls.Add(title);
+
+            // Username
+            Label lblUsername = CreateFieldLabel("Username");
+            lblUsername.SetBounds(40, 90, 160, 30);
+            pnlContent.Controls.Add(lblUsername);
+
+            TextBox txtUsername = new TextBox();
+            txtUsername.Text = "a.naidoo";
+            txtUsername.ReadOnly = true;
+            txtUsername.SetBounds(200, 85, 350, 30);
+            pnlContent.Controls.Add(txtUsername);
+
+            // Full Name
+            Label lblFullName = CreateFieldLabel("Full Name");
+            lblFullName.SetBounds(40, 135, 160, 30);
+            pnlContent.Controls.Add(lblFullName);
+
+            TextBox txtFullName = new TextBox();
+            txtFullName.Text = "Ashley Naidoo";
+            txtFullName.ReadOnly = true;
+            txtFullName.SetBounds(200, 130, 350, 30);
+            pnlContent.Controls.Add(txtFullName);
+
+            // Role
+            Label lblRole = CreateFieldLabel("Role");
+            lblRole.SetBounds(40, 180, 160, 30);
+            pnlContent.Controls.Add(lblRole);
+
+            TextBox txtRole = new TextBox();
+            txtRole.Text = "System Administrator";
+            txtRole.ReadOnly = true;
+            txtRole.SetBounds(200, 175, 350, 30);
+            pnlContent.Controls.Add(txtRole);
+
+            // Active Status
+            Label lblStatus = CreateFieldLabel(
+                "Active Status");
+
+            lblStatus.SetBounds(40, 225, 160, 30);
+            pnlContent.Controls.Add(lblStatus);
+
+            TextBox txtStatus = new TextBox();
+            txtStatus.Text = "Active";
+            txtStatus.ReadOnly = true;
+            txtStatus.SetBounds(200, 220, 350, 30);
+            pnlContent.Controls.Add(txtStatus);
+
+            // User list heading
+            Label lblUserList = CreateFieldLabel(
+                "User List");
+
+            lblUserList.SetBounds(40, 280, 160, 30);
+            pnlContent.Controls.Add(lblUserList);
+
+            TextBox txtUserList = new TextBox();
+            txtUserList.Text =
+                "Username     |     Role     |     Status";
+            txtUserList.ReadOnly = true;
+            txtUserList.SetBounds(200, 275, 500, 30);
+            pnlContent.Controls.Add(txtUserList);
+
+            // Actions
+            Label lblActions = new Label();
+            lblActions.Text =
+                "Actions:  ADD    EDIT    DEACTIVATE    SAVE";
+
+            lblActions.Font = new Font(
+                "Arial",
+                10,
+                FontStyle.Bold);
+
+            lblActions.ForeColor =
+                Color.FromArgb(90, 40, 40);
+
+            lblActions.SetBounds(40, 340, 600, 30);
+
+            pnlContent.Controls.Add(lblActions);
+        }
+
+        // =========================================================
+        // MANAGE USER ACCESS
+        // =========================================================
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ShowManageUserAccess();
+        }
+
+        private void ShowManageUserAccess()
+        {
+            pnlContent.Controls.Clear();
+
+            Label title = CreateContentTitle(
+                "Manage User Access");
+
+            pnlContent.Controls.Add(title);
+
+            Label description = new Label();
+
+            description.Text =
+                "Manage access and permissions for system users.\r\n\r\n" +
+                "This section is restricted to the System Administrator.";
+
+            description.Font = new Font(
+                "Arial",
+                11,
+                FontStyle.Regular);
+
+            description.ForeColor =
+                Color.FromArgb(60, 60, 60);
+
+            description.SetBounds(
+                40,
+                100,
+                650,
+                100);
+
+            pnlContent.Controls.Add(description);
+        }
+
+        // =========================================================
+        // GENERATE REPORTS
+        // =========================================================
+        private void button3_Click(object sender, EventArgs e)
+        {
+            ShowReports();
+        }
+
+        private void ShowReports()
+        {
+            pnlContent.Controls.Clear();
+
+            Label title = CreateContentTitle(
+                "Generate Reports");
+
+            pnlContent.Controls.Add(title);
+
+            Label description = new Label();
+
+            description.Text =
+                "Management reports can be generated from this section.\r\n\r\n" +
+                "Select a report type and reporting period.";
+
+            description.Font = new Font(
+                "Arial",
+                11,
+                FontStyle.Regular);
+
+            description.ForeColor =
+                Color.FromArgb(60, 60, 60);
+
+            description.SetBounds(
+                40,
+                100,
+                650,
+                100);
+
+            pnlContent.Controls.Add(description);
+        }
+
+        // =========================================================
+        // LOGOUT
+        // =========================================================
         private void button2_Click(object sender, EventArgs e)
         {
-            FrmLogin login = new FrmLogin();
+            Session.Clear();
 
+            FrmLogin login = new FrmLogin();
             login.Show();
 
             this.Close();
         }
 
+        // =========================================================
+        // CONTENT LABEL HELPERS
+        // =========================================================
+        private Label CreateContentTitle(string text)
+        {
+            Label label = new Label();
+
+            label.Text = text;
+            label.Font = new Font(
+                "Arial",
+                16,
+                FontStyle.Bold);
+
+            label.ForeColor =
+                Color.FromArgb(35, 61, 105);
+
+            label.SetBounds(
+                40,
+                30,
+                700,
+                40);
+
+            return label;
+        }
+
+        private Label CreateFieldLabel(string text)
+        {
+            Label label = new Label();
+
+            label.Text = text;
+            label.Font = new Font(
+                "Arial",
+                10,
+                FontStyle.Bold);
+
+            label.ForeColor =
+                Color.FromArgb(35, 61, 105);
+
+            return label;
+        }
+
+        // =========================================================
+        // OLD DESIGNER EVENTS
+        // Kept so existing Designer connections do not break.
+        // =========================================================
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            ShowDashboard();
+        }
+
+        private void FrmAdmin_Load(object sender, EventArgs e)
+        {
+        }
+
+        private void FrmAdmin_Load_1(object sender, EventArgs e)
+        {
+        }
+
         private void btnSeen_Click(object sender, EventArgs e)
         {
-            if (dgvAppointments.SelectedRows.Count == 0)
-            {
-                MessageBox.Show(
-                    "Please select a record first.",
-                    "No Selection",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-
-                return;
-            }
-
-            try
-            {
-                DataGridViewRow row = dgvAppointments.SelectedRows[0];
-
-                using (MySqlConnection conn =
-                    new MySqlConnection(Database.ConnectionString))
-                {
-                    string query = "";
-
-                    // Appointment records
-                    if (dgvAppointments.Columns.Contains("AppointmentID"))
-                    {
-                        string id =
-                            row.Cells["AppointmentID"].Value.ToString();
-
-                        query = "DELETE FROM Appointments " +
-                                "WHERE AppointmentID = @ID";
-
-                        using (MySqlCommand cmd =
-                            new MySqlCommand(query, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@ID", id);
-
-                            conn.Open();
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-
-                    // Student records
-                    else if (dgvAppointments.Columns.Contains("PatientID"))
-                    {
-                        string id =
-                            row.Cells["PatientID"].Value.ToString();
-
-                        query = "DELETE FROM Users " +
-                                "WHERE PatientID = @ID";
-
-                        using (MySqlCommand cmd =
-                            new MySqlCommand(query, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@ID", id);
-
-                            conn.Open();
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-
-                    // Staff records
-                    else if (dgvAppointments.Columns.Contains("EmployeeNumber"))
-                    {
-                        string id =
-                            row.Cells["EmployeeNumber"].Value.ToString();
-
-                        query = "DELETE FROM staffRecord " +
-                                "WHERE EmployeeNumber = @ID";
-
-                        using (MySqlCommand cmd =
-                            new MySqlCommand(query, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@ID", id);
-
-                            conn.Open();
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
-
-                    else
-                    {
-                        MessageBox.Show(
-                            "The selected record type cannot be identified.",
-                            "Delete Error",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
-
-                        return;
-                    }
-                }
-
-                MessageBox.Show(
-                    "Record deleted successfully.",
-                    "Deleted",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-
-                // Refresh the table
-                dgvAppointments.DataSource = null;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Could not delete the record.\n\n" + ex.Message,
-                    "Database Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            try
-            {
-                // Refresh appointments
-                if (dgvAppointments.Columns.Contains("AppointmentID"))
-                {
-                    LoadAppointments();
-                }
-
-                // Refresh student records
-                else if (dgvAppointments.Columns.Contains("PatientID"))
-                {
-                    LoadStudentRecords();
-                }
-
-                // Refresh staff records
-                else if (dgvAppointments.Columns.Contains("EmployeeNumber"))
-                {
-                    LoadStaffRecords();
-                }
-
-                else
-                {
-                    MessageBox.Show(
-                        "There are no records to refresh.",
-                        "Refresh",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-
-                    return;
-                }
-
-                MessageBox.Show(
-                    "Records refreshed successfully.",
-                    "Refresh",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Could not refresh records.\n\n" + ex.Message,
-                    "Refresh Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnUpdate_Click(object sender, EventArgs e)
-        {
-            // If nothing is loaded, load all appointment records first
-            if (dgvAppointments.Rows.Count == 0)
-            {
-                LoadAppointments();
-                return;
-            }
-
-            // Check if a row is selected
-            if (dgvAppointments.SelectedRows.Count == 0)
-            {
-                MessageBox.Show(
-                    "Select an appointment record to update.",
-                    "No Selection",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-
-                return;
-            }
-
-            try
-            {
-                DataGridViewRow row = dgvAppointments.SelectedRows[0];
-
-                string appointmentID =
-                    row.Cells["AppointmentID"].Value.ToString();
-
-                string query = @"
-            UPDATE Appointments
-            SET
-                StudentNumber = @StudentNumber,
-                Initials = @Initials,
-                AppointmentDate = @AppointmentDate,
-                AppointmentTime = @AppointmentTime,
-                Reason = @Reason,
-                Email = @Email
-            WHERE AppointmentID = @AppointmentID";
-
-                using (MySqlConnection conn =
-                    new MySqlConnection(Database.ConnectionString))
-                {
-                    using (MySqlCommand cmd =
-                        new MySqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue(
-                            "@AppointmentID",
-                            appointmentID);
-
-                        cmd.Parameters.AddWithValue(
-                            "@StudentNumber",
-                            row.Cells["StudentNumber"].Value);
-
-                        cmd.Parameters.AddWithValue(
-                            "@Initials",
-                            row.Cells["Initials"].Value);
-
-                        cmd.Parameters.AddWithValue(
-                            "@AppointmentDate",
-                            row.Cells["AppointmentDate"].Value);
-
-                        cmd.Parameters.AddWithValue(
-                            "@AppointmentTime",
-                            row.Cells["AppointmentTime"].Value);
-
-                        cmd.Parameters.AddWithValue(
-                            "@Reason",
-                            row.Cells["Reason"].Value);
-
-                        cmd.Parameters.AddWithValue(
-                            "@Email",
-                            row.Cells["Email"].Value);
-
-                       
-
-                        conn.Open();
-
-                        int result = cmd.ExecuteNonQuery();
-
-                        if (result > 0)
-                        {
-                            MessageBox.Show(
-                                "Appointment updated successfully.",
-                                "Update Successful",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Information);
-
-                            LoadAppointments();
-                        }
-                        else
-                        {
-                            MessageBox.Show(
-                                "No appointment was updated.",
-                                "Update",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Could not update appointment.\n\n" + ex.Message,
-                    "Database Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-
-        }
-
-        private void btnShowPatients_Click(object sender, EventArgs e)
-        {
-
-
-            MessageBox.Show(
-        "This is Student Records",
-        "Student Records",
-        MessageBoxButtons.OK,
-        MessageBoxIcon.Information);
-
-         string query = @"
-        SELECT*
-        FROM Users
-        ORDER BY PatientID DESC";
-
-            try
-            {
-                using (MySqlConnection conn =
-                    new MySqlConnection(Database.ConnectionString))
-                {
-                    conn.Open();
-
-                    using (MySqlDataAdapter adapter =
-                        new MySqlDataAdapter(query, conn))
-                    {
-                        DataTable table = new DataTable();
-
-                        adapter.Fill(table);
-
-                        dgvAppointments.DataSource = table;
-                    }
-                }
-
-                dgvAppointments.ReadOnly = true;
-                dgvAppointments.AllowUserToAddRows = false;
-                dgvAppointments.AllowUserToDeleteRows = false;
-                dgvAppointments.SelectionMode =
-                    DataGridViewSelectionMode.FullRowSelect;
-
-                dgvAppointments.AutoSizeColumnsMode =
-                    DataGridViewAutoSizeColumnsMode.Fill;
-            }
-            catch (MySqlException ex)
-            {
-                MessageBox.Show(
-                    "Database Error:\n\n" + ex.Message,
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            string connectionString =
-       "Server=localhost;Database=healthsystemdb;Uid=root;Pwd=nibbles123;";
-
-            string query = @"
-        SELECT*
-        FROM Appointments
-        ORDER BY AppointmentID DESC";
-
-            try
-            {
-                using (MySqlConnection conn =
-                    new MySqlConnection(connectionString))
-                {
-                    conn.Open();
-
-                    using (MySqlDataAdapter adapter =
-                        new MySqlDataAdapter(query, conn))
-                    {
-                        DataTable table = new DataTable();
-
-                        adapter.Fill(table);
-
-                        dgvAppointments.DataSource = table;
-                    }
-                }
-
-                dgvAppointments.AutoSizeColumnsMode =
-                    DataGridViewAutoSizeColumnsMode.Fill;
-
-                dgvAppointments.ReadOnly = true;
-
-                dgvAppointments.AllowUserToAddRows = false;
-
-                dgvAppointments.AllowUserToDeleteRows = false;
-
-                dgvAppointments.SelectionMode =
-                    DataGridViewSelectionMode.FullRowSelect;
-
-                MessageBox.Show(
-                    "All appointment booking records are displayed.",
-                    "Appointment Records",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-            }
-            catch (MySqlException ex)
-            {
-                MessageBox.Show(
-                    "Database Error:\n\n" + ex.Message,
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            StaffRecords record = new StaffRecords();
-            record.Show();
-
-            this.Hide();
-            return;
-        }
-
-        private void dgvAppointments_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            if (dgvAppointments.SelectedRows.Count == 0)
-            {
-                MessageBox.Show(
-                    "Please select a staff member first.",
-                    "No Selection",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-
-                return;
-            }
-
-            try
-            {
-                string employeeNumber =
-                    dgvAppointments.SelectedRows[0]
-                    .Cells["EmployeeNumber"].Value.ToString();
-
-                string query = @"
-            UPDATE staffRecord
-            SET Status = 'Active'
-            WHERE EmployeeNumber = @EmployeeNumber";
-
-                using (MySqlConnection conn =
-                    new MySqlConnection(Database.ConnectionString))
-                {
-                    using (MySqlCommand cmd =
-                        new MySqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue(
-                            "@EmployeeNumber",
-                            employeeNumber);
-
-                        conn.Open();
-
-                        int result = cmd.ExecuteNonQuery();
-
-                        if (result > 0)
-                        {
-                            MessageBox.Show(
-                                "Staff account has been activated.",
-                                "Account Activated",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Information);
-
-                            LoadStaffRecords();
-                        }
-                        else
-                        {
-                            MessageBox.Show(
-                                "Staff account was not found.",
-                                "Error",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Error activating account:\n\n" + ex.Message,
-                    "Database Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-        }
-        private void LoadStaffRecords()
-        {
-            string query = @"
-        SELECT *
-        FROM staffRecord
-        ORDER BY EmployeeNumber DESC";
-
-            using (MySqlConnection conn =
-                new MySqlConnection(Database.ConnectionString))
-            {
-                MySqlDataAdapter adapter =
-                    new MySqlDataAdapter(query, conn);
-
-                DataTable table = new DataTable();
-                adapter.Fill(table);
-
-                dgvAppointments.DataSource = table;
-            }
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(
-       "This is the staff records.",
-       "Staff Records",
-       MessageBoxButtons.OK,
-       MessageBoxIcon.Information
-        );
+        }
 
-            string query = "SELECT * FROM staffRecord";
-
-            using (MySqlConnection conn = new MySqlConnection(Database.ConnectionString))
-            {
-                try
-                {
-                    conn.Open();
-
-                    MySqlDataAdapter adapter =
-                        new MySqlDataAdapter(query, conn);
-
-                    DataTable table = new DataTable();
-                    adapter.Fill(table);
-
-                    dgvAppointments.DataSource = table;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error loading staff records: " + ex.Message);
-                }
-            }
+        private void button5_Click(object sender, EventArgs e)
+        {
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            if (dgvAppointments.SelectedRows.Count == 0)
-            {
-                MessageBox.Show(
-                    "Please select a staff member first.",
-                    "No Selection",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+        }
 
-                return;
-            }
+        private void dgvAppointments_CellContentClick(
+            object sender,
+            DataGridViewCellEventArgs e)
+        {
+        }
 
-            try
-            {
-                string employeeNumber =
-                    dgvAppointments.SelectedRows[0]
-                    .Cells["EmployeeNumber"].Value.ToString();
+        private void LoadAppointments()
+        {
+        }
 
-                string query = @"
-            UPDATE staffRecord
-            SET Status = 'Inactive'
-            WHERE EmployeeNumber = @EmployeeNumber";
+        private void LoadStudentRecords()
+        {
+        }
 
-                using (MySqlConnection conn =
-                    new MySqlConnection(Database.ConnectionString))
-                {
-                    using (MySqlCommand cmd =
-                        new MySqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue(
-                            "@EmployeeNumber",
-                            employeeNumber);
-
-                        conn.Open();
-
-                        int result = cmd.ExecuteNonQuery();
-
-                        if (result > 0)
-                        {
-                            MessageBox.Show(
-                                "Staff account has been deactivated.",
-                                "Account Deactivated",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Information);
-
-                            LoadStaffRecords();
-                        }
-                        else
-                        {
-                            MessageBox.Show(
-                                "Staff account was not found.",
-                                "Error",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Error deactivating account:\n\n" + ex.Message,
-                    "Database Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
+        private void LoadStaffRecords()
+        {
         }
     }
 }

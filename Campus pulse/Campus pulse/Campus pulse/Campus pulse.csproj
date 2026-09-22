@@ -103,6 +103,9 @@
     <Compile Include="ForgotPasswordForm.Designer.cs">
       <DependentUpon>ForgotPasswordForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ManageSystemUsers.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="StaffRecords.cs">
       <SubType>Form</SubType>
     </Compile>
