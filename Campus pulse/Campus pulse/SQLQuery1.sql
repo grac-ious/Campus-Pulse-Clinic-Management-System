@@ -1,0 +1,12 @@
+﻿CREATE TABLE Users
+(
+    UserID INT PRIMARY KEY IDENTITY(1,1),
+
+    StudentNumber VARCHAR(20) NOT NULL,
+
+    FullName VARCHAR(100) NOT NULL,
+
+    Email VARCHAR(100) NOT NULL,
+
+    Password VARCHAR(100) NOT NULL
+);
